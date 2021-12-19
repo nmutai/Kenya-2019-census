@@ -1,0 +1,53 @@
+# Average household size in Kenya according to 2019 census.
+# Clear workspace
+rm(list = ls(all.names = TRUE))
+
+# Warnings off
+
+options(warn = -1)
+
+# Set working directory
+setwd("C:/Users/nmutai/Desktop/All_lectures/Mapmaking in R with Choroplethr/Kenya")
+
+
+# Load packages
+suppressPackageStartupMessages({
+library(maptools)
+library(raster)
+library(rgdal)
+library(sp)
+library(sf)
+library(ggplot2)
+library(viridis)
+library(ggthemes)
+library(jtools)
+library(tmap)
+library(RColorBrewer)
+})
+
+
+hhsize <- read.csv("hh_size.csv", header = TRUE, sep = ";")
+
+
+# Load shapefile
+load("Kenya.Rdata")
+
+hhsize_map <- merge(Kenya, hhsize , by = 'NAME_1')
+
+# Save shapefile
+shapefile(hhsize_map, "hhsize_map.shp")
+
+# Map
+pal <- c("#000000","#333333","#666666","#999999","#CCCCCC","#FFFFFF")
+# pal2 <- rainbow(6)
+tm_shape(hhsize_map) +
+    tm_polygons("hh_size", style = "quantile", n = 6,
+                palette = c('lightblue','khaki1', 'red3'),
+                title = "size", style = "fisher",
+                border.col='grey27', alpha=.9) +
+    tm_legend(outside = FALSE) +
+    tm_compass(position = c("right", "bottom")) +
+    tm_layout(main.title = "Average household size in Kenya 2019 census",
+              frame = TRUE,
+              main.title.size = 1)
+ 
